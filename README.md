@@ -1,73 +1,82 @@
-# React + TypeScript + Vite
+Real-Time Chat Application (WhatsApp-Style)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This project is a full-stack real-time chat application inspired by WhatsApp. It is built using React (TypeScript) on the frontend and Node.js with Socket.IO and PostgreSQL on the backend. The application focuses on real-time communication, scalable architecture, and message interaction features.
 
-Currently, two official plugins are available:
+Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+The application supports one-to-one private messaging with real-time delivery using Socket.IO. Users can see online and offline status, last seen timestamps, typing indicators, and read receipts (sent/seen). Messages are stored persistently in PostgreSQL and loaded using pagination/infinite scroll.
 
-## React Compiler
+Users can react to messages using emojis, with reactions updating in real time. Messages support soft deletion (WhatsApp-style “This message was deleted”), forwarding, and replies using a reply_to reference in the database. JWT-based authentication is used for both REST APIs and socket connections.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Tech Stack
 
-## Expanding the ESLint configuration
+Frontend: React (TypeScript), Vite, Socket.IO Client, Axios
+Backend: Node.js, Express, Socket.IO, PostgreSQL, JWT Authentication
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Project Structure
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+chat-app/
+├── chat-app-frontend/
+│ └── src/
+│ ├── api/ (Axios API layer)
+│ ├── auth/ (Token handling and helpers)
+│ ├── socket/ (Socket.IO client setup)
+│ ├── pages/Chat/
+│ │ ├── ChatWindow.tsx (Main chat logic – messages, reactions, delete, forward, reply, typing, pagination)
+│ │ └── UserList.tsx (User list, online status, unread counts)
+│ ├── App.tsx
+│ └── main.tsx
+│
+└── chat-app-backend/
+└── src/
+├── config/ (DB connection, environment variables)
+├── middlewares/ (Auth middleware)
+├── modules/message/ (Message services, reactions, delete, history)
+├── websocket/ (Presence tracking: online/offline users)
+├── app.ts (Express app setup)
+└── server.ts (HTTP + Socket.IO server, all socket events)
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+Database Schema (Core)
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+messages table stores id, sender_id, receiver_id, content, reply_to, is_deleted, status (sent/seen), and created_at.
+message_reactions table stores message_id, user_id, and emoji, allowing one reaction per user per message.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Backend Flow
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+The backend uses Express for REST APIs and Socket.IO for real-time communication. JWT is verified during socket connection. When a user connects, their socket ID is stored for presence tracking. Messages are saved to PostgreSQL and emitted in real time to the receiver. Reactions, deletes, forwards, typing indicators, and read receipts are all handled through socket events.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Frontend Flow
+
+The frontend maintains a single socket connection and listens for real-time events. ChatWindow.tsx (500+ lines) handles message rendering, scrolling, pagination, reactions, delete, forward, reply, typing, and read receipts. UserList.tsx shows all users, online/offline status, and unread message counts.
+
+Setup Instructions
+
+Backend:
+
+cd chat-app-backend
+
+npm install
+
+Create .env with PORT, DATABASE_URL, JWT_SECRET
+
+Start server using:
+npx ts-node-dev src/server.ts
+
+Frontend:
+
+cd chat-app-frontend
+
+npm install
+
+npm run dev
+
+
+Known Limitations
+
+UI is intentionally minimal. Forwarding currently uses a basic selection approach. No group chats, media sharing, or message editing yet.
+
+Learning Outcome
+
+This project demonstrates real-time system design, Socket.IO architecture, syncing REST and WebSocket data, handling message duplication issues, scalable presence tracking, and building WhatsApp-style chat functionality from scratch using a production-style folder structure.
+
+Author: Pratham Sharma
