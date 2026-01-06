@@ -1,0 +1,104 @@
+:root {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    "Segoe UI", sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  /* Dark-first design */
+  color-scheme: dark;
+  --bg-body: #020617;
+  --bg-app: radial-gradient(circle at top, #020617 0, #020617 40%, #020617 100%);
+  --text-main: #e6eaf2;
+  --text-muted: #9ca3af;
+  --link: #60a5fa;
+  --link-hover: #93c5fd;
+  --btn-bg: #111827;
+  --btn-border: rgba(148, 163, 184, 0.4);
+
+  color: var(--text-main);
+  background-color: var(--bg-body);
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  font-weight: 500;
+  color: var(--link);
+  text-decoration: none;
+}
+a:hover {
+  color: var(--link-hover);
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: var(--bg-app);
+  color: var(--text-main);
+  font-family: inherit;
+}
+
+/* Basic heading tweak for the app */
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+}
+
+/* Base button compatible with your inline custom buttons */
+button {
+  border-radius: 999px;
+  border: 1px solid var(--btn-border);
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: var(--btn-bg);
+  color: var(--text-main);
+  cursor: pointer;
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease,
+    transform 0.1s ease;
+}
+button:hover {
+  border-color: #60a5fa;
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.9);
+  transform: translateY(-1px);
+}
+button:focus,
+button:focus-visible {
+  outline: 2px solid #60a5fa;
+  outline-offset: 2px;
+}
+
+/* Light-scheme fallback (if user forces light mode) */
+@media (prefers-color-scheme: light) {
+  :root {
+    color-scheme: light;
+    --bg-body: #f9fafb;
+    --bg-app: radial-gradient(circle at top, #e5e7eb 0, #f9fafb 40%, #ffffff 100%);
+    --text-main: #111827;
+    --text-muted: #6b7280;
+    --link: #2563eb;
+    --link-hover: #1d4ed8;
+    --btn-bg: #f9fafb;
+    --btn-border: rgba(148, 163, 184, 0.6);
+
+    color: var(--text-main);
+    background-color: var(--bg-body);
+  }
+
+  a:hover {
+    color: var(--link-hover);
+  }
+
+  button {
+    background-color: var(--btn-bg);
+  }
+}
